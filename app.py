@@ -1,18 +1,18 @@
 import streamlit as st
 
 # --- ページ設定 ---
-st.set_page_config(page_title="伝送換算 (990bit-FD0bit)", layout="centered")
+st.set_page_config(page_title="伝送換算 (3200-FA00)", layout="centered")
 
-# --- 見た目の設定 ---
+# --- 見た目の設定（CSS） ---
 st.markdown("""
     <style>
-    .stNumberInput label { font-size: 18px !important; font-weight: 800 !important; color: #4169E1 !important; }
+    .stNumberInput label { font-size: 18px !important; font-weight: 800 !important; color: #1E90FF !important; }
     .stSelectbox label { font-size: 18px !important; font-weight: 800 !important; color: #FF4B4B !important; }
     .result-box {
-        background-color: #f0f2f6;
+        background-color: #f0f8ff;
         padding: 15px;
         border-radius: 10px;
-        border-left: 5px solid #4169E1;
+        border-left: 5px solid #1E90FF;
         margin-top: 20px;
     }
     .credit {
@@ -27,10 +27,10 @@ st.markdown("""
 # 右上にクレジットを表示
 st.markdown('<p class="credit">開発/制作：緒方</p>', unsafe_allow_html=True)
 
-st.title('📱 伝送換算 (990bit-FD0bit)(HEX)')
+st.title('📱 伝送換算 (3200h-FA00h)(HEX)')
 
 # --- 1. 基本情報設定 ---
-with st.expander("⚙️ 基本情報設定 (990h-FD0h基準)", expanded=True):
+with st.expander("⚙️ 基本情報設定 (3200h-FA00h基準)", expanded=True):
     # スケール設定
     col1, col2 = st.columns(2)
     with col1:
@@ -48,7 +48,7 @@ with st.expander("⚙️ 基本情報設定 (990h-FD0h基準)", expanded=True):
     # 入力抵抗の選択
     resistance = st.selectbox("入力抵抗を選択 (Ω)", [250, 500, 50], index=0)
     
-    # 選択された抵抗値に基づいて電圧を自動計算
+    # 電圧計算
     v_min_calc = (a_min / 1000.0) * resistance
     v_max_calc = (a_max / 1000.0) * resistance
 
@@ -59,12 +59,11 @@ with st.expander("⚙️ 基本情報設定 (990h-FD0h基準)", expanded=True):
     with col6:
         v_max = st.number_input("電圧上限 (V) ※自動計算", value=v_max_calc, format="%.3f")
 
-    # 現在の設定の注釈を表示
     st.caption(f"💡 現在の設定: {resistance}Ω の抵抗により、{a_min}mA→{v_min:.3f}V / {a_max}mA→{v_max:.3f}V となっています。")
 
-    # 伝送値幅（990h-FD0h固定）
-    t_min = float(int("990", 16))
-    t_max = float(int("FD0", 16))
+    # --- 重要：ここを確実に修正しました ---
+    t_min = float(int("3200", 16))  # 12800.0
+    t_max = float(int("FA00", 16))  # 64000.0
 
 st.markdown("---")
 
@@ -73,29 +72,31 @@ mode = st.radio("項目を選択して入力", ["伝送値(HEX)", "指示値", "
 
 percent = 0.0
 if mode == "伝送値(HEX)":
-    hex_input = st.text_input("現在の伝送値(HEX)を入力", value="990")
+    hex_input = st.text_input("現在の伝送値(HEX)を入力", value="3200").upper()
     try:
         val_dec = int(hex_input, 16)
+        # (現在値 - 3200h) / (FA00h - 3200h)
         percent = (float(val_dec) - t_min) / (t_max - t_min)
     except:
-        st.error("有効な16進数を入力してください（例: 990, FD0）")
+        st.error("有効な16進数を入力してください（例: 3200, FA00）")
 elif mode == "指示値":
     val = st.number_input("指示値", value=s_min)
-    percent = (val - s_min) / (s_max - s_min)
+    percent = (val - s_min) / (s_max - s_min) if (s_max - s_min) != 0 else 0
 elif mode == "割合(%)":
     val = st.number_input("％値", value=0.0)
     percent = val / 100.0
 elif mode == "電流(mA)":
     val = st.number_input("電流値", value=a_min)
-    percent = (val - a_min) / (a_max - a_min)
+    percent = (val - a_min) / (a_max - a_min) if (a_max - a_min) != 0 else 0
 elif mode == "電圧(V)":
     val = st.number_input("電圧値", value=v_min)
-    percent = (val - v_min) / (v_max - v_min)
+    percent = (val - v_min) / (v_max - v_min) if (v_max - v_min) != 0 else 0
 
 # --- 3. 計算結果 ---
 res_scale = s_min + (s_max - s_min) * percent
 res_ma = a_min + (a_max - a_min) * percent
 res_v = v_min + (v_max - v_min) * percent
+# パーセントから伝送値を逆算
 res_hex_dec = int(round(t_min + (t_max - t_min) * percent))
 res_hex = hex(res_hex_dec).replace('0x', '').upper()
 
@@ -108,4 +109,4 @@ c_r3.metric("電圧", f"{res_v:.3f} V")
 st.metric("伝送値 (HEX)", f"{res_hex} h")
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.caption("※伝送値 990h を 0%、FD0h を 100% として計算しています。")
+st.caption("※伝送値 3200h を 0%、FA00h を 100% として計算しています。")
