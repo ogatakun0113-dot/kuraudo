@@ -1,7 +1,7 @@
 import streamlit as st
 
 # --- ページ設定 ---
-st.set_page_config(page_title="伝送換算 (3200-FA00)", layout="centered")
+st.set_page_config(page_title="伝送換算 (3200-FA00)クラウドＴＭ用", layout="centered")
 
 # --- 見た目の設定（CSS） ---
 st.markdown("""
@@ -27,7 +27,7 @@ st.markdown("""
 # 右上にクレジットを表示
 st.markdown('<p class="credit">開発/制作：緒方</p>', unsafe_allow_html=True)
 
-st.title('📱 伝送換算 (3200h-FA00h)(HEX)')
+st.title('📱 伝送換算 (3200h-FA00h)(HEX)クラウドＴＭ用')
 
 # --- 1. 基本情報設定 ---
 with st.expander("⚙️ 基本情報設定 (3200h-FA00h基準)", expanded=True):
