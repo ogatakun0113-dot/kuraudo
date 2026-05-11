@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="伝送換算 (3200-FA00)クラウドＴＭ用", layout="centered")
+st.set_page_config(page_title="伝送値換算 (3200-FA00)クラウドＴＭ用", layout="centered")
 
 st.markdown("""
 <style>
@@ -11,7 +11,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<p class="credit">開発/制作：緒方</p>', unsafe_allow_html=True)
-st.title('📱 伝送換算 (3200-FA00)(HEX) クラウドＴＭ用')
+st.title('📱 伝送値換算 (3200-FA00)(HEX) クラウドＴＭ用')
 
 with st.expander("⚙️ 基本情報設定 (3200h-FA00h基準)", expanded=True):
     col1, col2 = st.columns(2)
